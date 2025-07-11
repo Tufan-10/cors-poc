@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      fetch('https://alerts.gitlab.net/api/v4/projects', {
+        method: 'GET',
+        credentials: 'include'
+      })
+      .then(response => console.log('Status:', response.status))
+      .catch(error => console.error(error));
+    </script>
+    <p>DevTools Console-এ দেখবে: request পাঠানো হয়েছে এবং response headers-এ CORS হেডার আসছে।</p>
+  </body>
+</html>
